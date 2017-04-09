@@ -32,20 +32,20 @@ public class AmazonCrawlerService extends AbstractBaseService {
 	 *       16295861:中国のTVドラマ
 	 */
 	AmazonItemService amazonItemService = new AmazonItemService();
-	final Integer PRICE_RANGE_COUNT = 15;
+	final Integer PRICE_RANGE_COUNT = 20;
 
 	URLCodec codec = new URLCodec("UTF-8");
 	
 	public String execute() {
 		long startTime = System.currentTimeMillis();
 
-		List<String> browseNodes = Arrays.asList("16286831", "16295841");
+		List<String> browseNodes = Arrays.asList("16286831", "16295821","16295831", "16295841", "16295851", "16295861");
 		int random = (int)(Math.random() * browseNodes.size());
 		
 		String searchIndex = "DVD";
 		String browseNode = browseNodes.get(random);
 		Integer minimumPrice = 5000;
-		Integer priceRange = 2500;
+		Integer priceRange = 2000;
 
 		int records = 0;
 		for (int itemPage = 1; itemPage <= 10; itemPage++) {
@@ -92,6 +92,7 @@ public class AmazonCrawlerService extends AbstractBaseService {
 		request.setMinimumPrice(new BigInteger(minimumPrice.toString()));
 		request.getResponseGroup().add("Medium");
 		request.getResponseGroup().add("Offers");
+		request.setSort("pricerank");
 		ItemSearchResponse response = requester.itemSearch(request);
 
 		List<AmazonItem> amazonItems = new ArrayList<>();
@@ -115,7 +116,7 @@ public class AmazonCrawlerService extends AbstractBaseService {
 		entity.lowest_used_price = lowest_used_price == null ? null : lowest_used_price.getAmount().intValue();
 		Price price = item.getItemAttributes().getListPrice();
 		entity.price = price == null ? null : price.getAmount().intValue();
-		entity.sales_rank = Integer.valueOf(item.getSalesRank());
+		entity.sales_rank = item.getSalesRank() == null ? null : Integer.valueOf(item.getSalesRank());
 		entity.title = item.getItemAttributes().getTitle();
 		entity.total_used = Integer.valueOf(item.getOfferSummary().getTotalUsed());
 		try {
