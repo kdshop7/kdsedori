@@ -93,7 +93,7 @@ public class AmazonItemDto extends AmazonItem {
 	
 
 	public boolean isNg() {
-		if (yahoo_auction_hit_count == 0) {
+		if (yahoo_auction_hit_count != null && yahoo_auction_hit_count == 0) {
 			return true;
 		}
 		if (newPrice2() < 5000) {

@@ -15,8 +15,8 @@
   <#else>
 	<a href="?ignore_ng_filter=true">NGフィルタを無効にする</a>
   </#if> 
-|<a target="_brank" href="/amazon-item/update-yahoo-hits">Y!更新</a>
-|<a target="_brank" href="http://localhost/kdsedori/amazon-api-test-blog/crawler.php">データ取込</a>
+|<a target="_brank" href="/crawler/update-yahoo-hits">Y!更新</a>
+|<a target="_brank" href="/crawler/run">データ取込</a>
 |</div>
 <table class="table table-striped table-bordered">
   <thead>
@@ -49,9 +49,13 @@
 		<td nowrap>
 			<a target="_brank" href="http://mnrate.com/item/aid/${item.asin}">モノ</a>
 			<br />
+			<#if item.yahoo_auction_url??>
 			<a target="_brank" href="${item.yahoo_auction_url}">ヤフ</a>
+			<#if item.yahoo_auction_hit_count??>
 		 	(<a target="_brank" href="yahoo-auction-hits?keyword=${item.title}&new_price=${item.new_price2}&yahoo_auction_contract_price=${item.yahoo_auction_contract_price!}">${item.yahoo_auction_hit_count}</a>)
+			</#if>
 			<br />
+			</#if>
 			<a target="_brank" href="https://www.mercari.com/jp/search/?sort_order=&keyword=${item.title}&category_root=5&category_child=74&brand_name=&brand_id=&size_group=&price_min=&price_max=&status_on_sale=1">メルカリ</a>
 		</td>
 		<td align="right" nowrap>

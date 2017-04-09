@@ -1,36 +1,96 @@
 package app.services;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.javalite.http.Get;
-import org.javalite.http.Http;
-import org.json.simple.parser.ParseException;
+import org.joda.time.DateTime;
 import org.sql2o.Connection;
 
 import app.dto.AmazonItemDto;
-import app.dto.YahooAuctionItem;
+import app.entity.AmazonItem;
 import app.entity.Bid;
 import app.system.AbstractBaseService;
 
 public class AmazonItemService extends AbstractBaseService {
 
-	final static String YAHOO_AUC_ID = System.getenv("YAHOO_AUC_ID");
-	
-	public AmazonItemDto findOne(String asin) {
+	public AmazonItemDto findAmazonItemDto(String asin) {
 		String sql = "";
 		sql += "select amazon_item.*,  sales_price, shipping_costs, bid.memo bid_memo ";
 		sql += "from amazon_item left outer join bid on amazon_item.asin = bid.asin ";
-		sql += "where amazon_item.asin = :asin ";		
+		sql += "where amazon_item.asin = :asin ";
 
 		try (Connection con = sql2o.open()) {
-			AmazonItemDto dto = con.createQuery(sql).addParameter("asin", asin).executeAndFetchFirst(AmazonItemDto.class);
+			AmazonItemDto dto = con.createQuery(sql).addParameter("asin", asin)
+					.executeAndFetchFirst(AmazonItemDto.class);
 			return dto;
+		}
+	}
+
+	public AmazonItem findAmazonOne(String asin) {
+		String sql = "";
+		sql += "select amazon_item.* ";
+		sql += "from amazon_item ";
+		sql += "where asin = :asin ";
+
+		try (Connection con = sql2o.open()) {
+			AmazonItem entity = con.createQuery(sql).addParameter("asin", asin).executeAndFetchFirst(AmazonItem.class);
+			return entity;
+		}
+	}
+
+	public void upsert(AmazonItem item) {
+		AmazonItem entity = findAmazonOne(item.asin);
+		if (entity == null) {
+			insert(item);
+		} else {
+			update(entity);
+		}
+	}
+
+	public Integer insert(AmazonItem item) {
+		String sql = "";
+		sql += "INSERT INTO amazon_item (asin, title, browse_node, sales_rank, price, lowest_new_price, lowest_used_price, yahoo_auction_url, yahoo_auction_hit_count, total_used, memo, created) ";
+		sql += "VALUES (:asin, :title, :browse_node, :sales_rank, :price, :lowest_new_price, :lowest_used_price, :yahoo_auction_url, :yahoo_auction_hit_count, :total_used, :memo, :created) ";
+
+		try (Connection con = sql2o.open()) {
+			return con.createQuery(sql)
+					.addParameter("asin", item.asin)
+					.addParameter("title", item.title)
+					.addParameter("browse_node", item.browse_node)
+					.addParameter("sales_rank", item.sales_rank)
+					.addParameter("price", item.price)
+					.addParameter("lowest_new_price", item.lowest_new_price)
+					.addParameter("lowest_used_price", item.lowest_used_price)
+					.addParameter("yahoo_auction_url", item.yahoo_auction_url)
+					.addParameter("yahoo_auction_hit_count", item.yahoo_auction_hit_count)
+					.addParameter("total_used", item.total_used)
+					.addParameter("memo", item.memo)
+					.addParameter("created", new DateTime())
+					.executeUpdate()
+					.getKey(Integer.class);
+		}
+	}
+
+	public void update(AmazonItem item) {
+		String sql = "";
+		sql += "update amazon_item ";
+		sql += "set title = :title, browse_node = :browse_node, sales_rank = :sales_rank, price = :price, lowest_new_price = :lowest_new_price, lowest_used_price = :lowest_used_price, yahoo_auction_url = :yahoo_auction_url, yahoo_auction_hit_count = :yahoo_auction_hit_count, total_used = :total_used, memo = :memo, updated = :updated ";
+		sql += "where asin = :asin";
+
+		try (Connection con = sql2o.open()) {
+			con.createQuery(sql)
+					.addParameter("title", item.title)
+					.addParameter("browse_node", item.browse_node)
+					.addParameter("sales_rank", item.sales_rank)
+					.addParameter("price", item.price)
+					.addParameter("lowest_new_price", item.lowest_new_price)
+					.addParameter("lowest_used_price", item.lowest_used_price)
+					.addParameter("yahoo_auction_url", item.yahoo_auction_url)
+					.addParameter("yahoo_auction_hit_count", item.yahoo_auction_hit_count)
+					.addParameter("total_used", item.total_used)
+					.addParameter("memo", item.memo)
+					.addParameter("updated", new DateTime())
+					.addParameter("asin", item.asin)
+					.executeUpdate();
 		}
 	}
 
@@ -38,7 +98,7 @@ public class AmazonItemService extends AbstractBaseService {
 		String sql = "";
 		sql += "select amazon_item.*,  sales_price, shipping_costs, bid.memo bid_memo ";
 		sql += "from amazon_item left outer join bid on amazon_item.asin = bid.asin ";
-		sql += "order by amazon_item.price / amazon_item.total_used ";
+		sql += "order by (case when total_used = 0 then 1000000 - sales_rank else price / total_used end) desc ";
 
 		try (Connection con = sql2o.open()) {
 			List<AmazonItemDto> list = con.createQuery(sql).executeAndFetch(AmazonItemDto.class);
@@ -62,80 +122,5 @@ public class AmazonItemService extends AbstractBaseService {
 			con.createQuery(sql).addParameter("asin", asin)
 					.addParameter("yahoo_auction_hit_count", yahoo_auction_hit_count).executeUpdate();
 		}
-	}
-
-	/**
-	 * @see https://www.mlab.im.dendai.ac.jp/~yamada/ir/WebService/YahooAuctionsSearch/
-	 */
-	public List<YahooAuctionItem> requstYahooAuction(String keyword, Integer newPrice,
-			Integer yahooAuctionContractPrice) throws UnsupportedEncodingException, ParseException {
-		List<YahooAuctionItem> items = new ArrayList<YahooAuctionItem>();
-		String BASE_URL = "http://auctions.yahooapis.jp/AuctionWebService/V2/search";
-
-		// リクエストパラメータ
-		String AUC_ID = YAHOO_AUC_ID;
-		String aucQuery = URLEncoder.encode(keyword, "UTF-8");
-
-		// リクエストURL
-		String url = BASE_URL + "?appid=" + AUC_ID + "&query=" + aucQuery + "&store=0";
-
-		Get get = Http.get(url);
-
-		String body = get.text("UTF-8");
-
-		Scanner scanner = new Scanner(body);
-
-		// 各要素の内容抽出のためのパターン (Response用)
-		Pattern patternTitle = Pattern.compile("<Title>(.+?)</Title>", Pattern.DOTALL);
-		Pattern patternAuctionItemUrl = Pattern.compile("<AuctionItemUrl>(.+?)</AuctionItemUrl>", Pattern.DOTALL);
-		Pattern patternPrice = Pattern.compile("<CurrentPrice>(.+?)</CurrentPrice>", Pattern.DOTALL);
-		Pattern patternAuctionId = Pattern.compile("<AuctionID>(.+?)</AuctionID>", Pattern.DOTALL);
-		Pattern patternBidOrBuy = Pattern.compile("<BidOrBuy>(.+?)</BidOrBuy>", Pattern.DOTALL);
-		Pattern patternSeller = Pattern.compile("<Seller>(.+?)</Seller>", Pattern.DOTALL);
-		Pattern patternId = Pattern.compile("<Id>(.+?)</Id>", Pattern.DOTALL);
-
-		scanner.useDelimiter("<Item>"); // item要素の開始タグを区切りとする
-		int i = 0;
-		while (scanner.hasNext()) {
-			String content = scanner.next();
-			if (i == 0) { // 0個目は最初の<item>よりも前なので不要
-				i++;
-				continue;
-			}
-
-			YahooAuctionItem item = new YahooAuctionItem();
-			// タイトルの抽出
-			item.title = getValue(patternTitle, content);
-			// リンクの抽出
-			item.auctionItemUrl = getValue(patternAuctionItemUrl, content);
-			// 価格の抽出
-			item.currentPrice = getIntegerValue(patternPrice, content);
-			item.bidOrBuy = getIntegerValue(patternBidOrBuy, content);
-			item.auctionId = getValue(patternAuctionId, content);
-			String sellerContent = getValue(patternSeller, content);
-			item.sellerId = getValue(patternId, sellerContent);
-
-			// 判定
-			// if ((!empty($item->CurrentPrice) && $new_price >=
-			// $item->CurrentPrice * 2)
-			// || (!empty($item->BidOrBuy) && $new_price >= $item->BidOrBuy *
-			// 2)) {
-			if (item.judge(newPrice, yahooAuctionContractPrice)) {
-				items.add(item);
-			}
-
-			i++;
-		}
-		return items;
-	}
-
-	protected String getValue(Pattern pattern, String content) {
-		Matcher matcher = pattern.matcher(content);
-		return (matcher.find()) ? matcher.group(1) : null;
-	}
-
-	protected Integer getIntegerValue(Pattern pattern, String content) {
-		Matcher matcher = pattern.matcher(content);
-		return (matcher.find()) ? (int) Double.parseDouble(matcher.group(1)) : null;
 	}
 }

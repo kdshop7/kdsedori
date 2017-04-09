@@ -129,6 +129,12 @@
 			<artifactId>app-config</artifactId>
 			<version>1.4.13</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/am.ik.aws/aws-apa -->
+		<dependency>
+			<groupId>am.ik.aws</groupId>
+			<artifactId>aws-apa</artifactId>
+			<version>0.9.5</version>
+		</dependency>
 
 	</dependencies>
 </project>
