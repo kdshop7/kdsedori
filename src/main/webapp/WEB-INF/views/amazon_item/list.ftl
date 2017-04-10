@@ -44,7 +44,7 @@
 <div class="container">
 <div class="row">
 	<hr />
- 	<form action="upsert"> 
+ 	<form  class="form-inline" action="upsert"> 
 
 	<div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
 		<span class="border-1">
@@ -56,6 +56,7 @@
 	</div>
 	<div class="col-lg-5 col-md-5 col-sm-5 col-xs-8">
 			<a target="_brank" href="https://www.amazon.co.jp/gp/offer-listing/${item.asin}/ref=dp_olp_used?ie=UTF8&condition=used">${item.title}</a>
+			<br />
 			<br />
 			| ${item.new_price2}円 | ${item.lowest_used_price!}円 (${item.total_used}) | 
 			<a target="_brank" href="http://mnrate.com/item/aid/${item.asin}">モノ</a>
@@ -70,19 +71,21 @@
 			<a target="_brank" href="https://www.mercari.com/jp/search/?sort_order=&keyword=${item.title}&category_root=5&category_child=74&brand_name=&brand_id=&size_group=&price_min=&price_max=&status_on_sale=1">メルカリ</a>
 			|
 			<br />
-			<textarea class="form-control" name="bid_memo" rows="2" >${item.bid_memo!}</textarea>
+			<textarea class="form-control" id="InputTextarea" name="bid_memo" rows="2" >${item.bid_memo!}</textarea>
 	</div>
 	<div class="col-lg-2 col-md-2 col-sm-2 col-xs-9">
-			<input type="text" name="sales_price" value="${item.sales_price!}" size="7" />円
+		<div class="pull-right">
+			<span class="text-nowrap"><input type="text" class="form-control" id="InputNumber" name="sales_price" value="${item.sales_price!}" size="7" />円</span>
 			<br />
 			${item.yahoo_auction_contract_price!}円
 			<br />
-			<input type="text" name="shipping_costs" class="shipping_costs" value="${item.shipping_costs!}" size="5" />円
+			<input type="text" class="form-control" id="InputNumber" name="shipping_costs" class="shipping_costs" value="${item.shipping_costs!}" size="5" />円
 			<br />
 			${item.profit!}円(${item.roi!}%)
+		</div>
 	</div>
 	<div class="col-lg-2 col-md-2 col-sm-2 col-xs-3">
-			<input type="submit" value="更新">	
+			<input type="submit" class="btn btn-default center-block" value="更新">	
 			<br />
 			<input type="hidden" name="asin" value="${item.asin}" />
 	</div>		

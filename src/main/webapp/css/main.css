@@ -69,3 +69,7 @@ table tr td{
     padding:10px;
 }
 
+.text-nowrap {
+    white-space: nowrap;
+}
+

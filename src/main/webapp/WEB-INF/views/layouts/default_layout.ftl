@@ -24,7 +24,7 @@
 
         
     <!--<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>-->
-    <!--<LINK href="${context_path}/css/main.css" rel="stylesheet" type="text/css"/>-->
+    <LINK href="${context_path}/css/main.css" rel="stylesheet" type="text/css"/>
     <!--<script src="${context_path}/js/jquery-1.4.2.min.js" type="text/javascript"></script>-->
     <script src="${context_path}/js/aw.js" type="text/javascript"></script>
     <script src="${context_path}/js/knockout-3.4.2.js" type="text/javascript"></script>
