@@ -46,7 +46,7 @@
 	<hr />
  	<form action="upsert"> 
 
-	<div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+	<div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
 		<span class="border-1">
  			<#if item.image_url??>
 				<img src="${item.image_url}" /><br />
@@ -54,7 +54,7 @@
 			<a name="${item.asin}"><span id="${item.asin}"> </span></a>${item.asin} <br />${item.sales_rank!}位
 		</span>
 	</div>
-	<div class="col-lg-5 col-md-5 col-sm-5 col-xs-10">
+	<div class="col-lg-5 col-md-5 col-sm-5 col-xs-8">
 			<a target="_brank" href="https://www.amazon.co.jp/gp/offer-listing/${item.asin}/ref=dp_olp_used?ie=UTF8&condition=used">${item.title}</a>
 			<br />
 			| ${item.new_price2}円 | ${item.lowest_used_price!}円 (${item.total_used}) | 
@@ -72,7 +72,7 @@
 			<br />
 			<textarea name="bid_memo" rows="2" >${item.bid_memo!}</textarea>
 	</div>
-	<div class="col-lg-2 col-md-2 col-sm-2 col-xs-3">
+	<div class="col-lg-2 col-md-2 col-sm-2 col-xs-9">
 			<input type="text" name="sales_price" value="${item.sales_price!}" size="7" />円
 			<br />
 			${item.yahoo_auction_contract_price!}円
@@ -81,7 +81,7 @@
 			<br />
 			${item.profit!}円(${item.roi!}%)
 	</div>
-	<div class="col-lg-2 col-md-2 col-sm-2 col-xs-4">
+	<div class="col-lg-2 col-md-2 col-sm-2 col-xs-3">
 			<input type="submit" value="更新">	
 			<br />
 			<input type="hidden" name="asin" value="${item.asin}" />
