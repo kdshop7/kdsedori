@@ -17,6 +17,13 @@ public class AmazonItem {
 	public Integer yahoo_auction_hit_count;
 	public Integer total_used;
 	public String memo;
+
+	public String image_url;
+	public Integer is_preorder = 0;
+	public Integer is_deleted = 0;
+	public Integer is_bid = 0;
+	public Integer is_success_bid = 0;
+	
 	public DateTime created;
 	public DateTime updated;
 
@@ -130,6 +137,46 @@ public class AmazonItem {
 
 	public void setUpdated(DateTime updated) {
 		this.updated = updated;
+	}
+
+	public String getImage_url() {
+		return image_url;
+	}
+
+	public void setImage_url(String image_url) {
+		this.image_url = image_url;
+	}
+
+	public Integer getIs_preorder() {
+		return is_preorder;
+	}
+
+	public void setIs_preorder(Integer is_preorder) {
+		this.is_preorder = is_preorder;
+	}
+
+	public Integer getIs_deleted() {
+		return is_deleted;
+	}
+
+	public void setIs_deleted(Integer is_deleted) {
+		this.is_deleted = is_deleted;
+	}
+
+	public Integer getIs_bid() {
+		return is_bid;
+	}
+
+	public void setIs_bid(Integer is_bid) {
+		this.is_bid = is_bid;
+	}
+
+	public Integer getIs_success_bid() {
+		return is_success_bid;
+	}
+
+	public void setIs_success_bid(Integer is_success_bid) {
+		this.is_success_bid = is_success_bid;
 	}
 
 }

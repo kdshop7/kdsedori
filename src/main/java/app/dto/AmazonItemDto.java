@@ -115,6 +115,12 @@ public class AmazonItemDto extends AmazonItem {
 		if (sales_rank != null && sales_rank > 50000) {
 			return true;
 		}		
+		if (is_preorder != null && is_preorder == 1) {
+			return true;
+		}
+		if (is_deleted != null && is_deleted == 1) {
+			return true;
+		}
 		return false;
 	}
 

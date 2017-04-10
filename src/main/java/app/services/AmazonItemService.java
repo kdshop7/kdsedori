@@ -27,7 +27,7 @@ public class AmazonItemService extends AbstractBaseService {
 
 	public AmazonItem findAmazonOne(String asin) {
 		String sql = "";
-		sql += "select amazon_item.* ";
+		sql += "select * ";
 		sql += "from amazon_item ";
 		sql += "where asin = :asin ";
 
@@ -42,14 +42,14 @@ public class AmazonItemService extends AbstractBaseService {
 		if (entity == null) {
 			insert(item);
 		} else {
-			update(entity);
+			update(item);
 		}
 	}
 
 	public Integer insert(AmazonItem item) {
 		String sql = "";
-		sql += "INSERT INTO amazon_item (asin, title, browse_node, sales_rank, price, lowest_new_price, lowest_used_price, yahoo_auction_url, yahoo_auction_hit_count, total_used, memo, created) ";
-		sql += "VALUES (:asin, :title, :browse_node, :sales_rank, :price, :lowest_new_price, :lowest_used_price, :yahoo_auction_url, :yahoo_auction_hit_count, :total_used, :memo, :created) ";
+		sql += "INSERT INTO amazon_item (asin, title, browse_node, sales_rank, price, lowest_new_price, lowest_used_price, yahoo_auction_url, yahoo_auction_hit_count, total_used, memo, created, image_url, is_preorder, is_deleted, is_bid, is_success_bid) ";
+		sql += "VALUES (:asin, :title, :browse_node, :sales_rank, :price, :lowest_new_price, :lowest_used_price, :yahoo_auction_url, :yahoo_auction_hit_count, :total_used, :memo, :created, :image_url, :is_preorder, :is_deleted, :is_bid, :is_success_bid) ";
 
 		try (Connection con = sql2o.open()) {
 			return con.createQuery(sql)
@@ -65,6 +65,11 @@ public class AmazonItemService extends AbstractBaseService {
 					.addParameter("total_used", item.total_used)
 					.addParameter("memo", item.memo)
 					.addParameter("created", new DateTime())
+					.addParameter("image_url", item.image_url)
+					.addParameter("is_preorder", item.is_preorder)
+					.addParameter("is_deleted", item.is_deleted)
+					.addParameter("is_bid", item.is_bid)
+					.addParameter("is_success_bid", item.is_success_bid)
 					.executeUpdate()
 					.getKey(Integer.class);
 		}
@@ -73,7 +78,7 @@ public class AmazonItemService extends AbstractBaseService {
 	public void update(AmazonItem item) {
 		String sql = "";
 		sql += "update amazon_item ";
-		sql += "set title = :title, browse_node = :browse_node, sales_rank = :sales_rank, price = :price, lowest_new_price = :lowest_new_price, lowest_used_price = :lowest_used_price, yahoo_auction_url = :yahoo_auction_url, yahoo_auction_hit_count = :yahoo_auction_hit_count, total_used = :total_used, memo = :memo, updated = :updated ";
+		sql += "set title = :title, browse_node = :browse_node, sales_rank = :sales_rank, price = :price, lowest_new_price = :lowest_new_price, lowest_used_price = :lowest_used_price, yahoo_auction_url = :yahoo_auction_url, yahoo_auction_hit_count = :yahoo_auction_hit_count, total_used = :total_used, memo = :memo, updated = :updated, image_url = :image_url, is_preorder = :is_preorder, is_deleted = :is_deleted, is_bid = :is_bid, is_success_bid = :is_success_bid ";
 		sql += "where asin = :asin";
 
 		try (Connection con = sql2o.open()) {
@@ -89,6 +94,11 @@ public class AmazonItemService extends AbstractBaseService {
 					.addParameter("total_used", item.total_used)
 					.addParameter("memo", item.memo)
 					.addParameter("updated", new DateTime())
+					.addParameter("image_url", item.image_url)
+					.addParameter("is_preorder", item.is_preorder)
+					.addParameter("is_deleted", item.is_deleted)
+					.addParameter("is_bid", item.is_bid)
+					.addParameter("is_success_bid", item.is_success_bid)					
 					.addParameter("asin", item.asin)
 					.executeUpdate();
 		}

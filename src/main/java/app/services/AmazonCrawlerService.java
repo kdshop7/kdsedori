@@ -16,6 +16,7 @@ import am.ik.aws.apa.jaxws.ItemSearchRequest;
 import am.ik.aws.apa.jaxws.ItemSearchResponse;
 import am.ik.aws.apa.jaxws.Items;
 import am.ik.aws.apa.jaxws.Offer;
+import am.ik.aws.apa.jaxws.OfferListing;
 import am.ik.aws.apa.jaxws.Price;
 import app.entity.AmazonItem;
 import app.system.AbstractBaseService;
@@ -48,8 +49,9 @@ public class AmazonCrawlerService extends AbstractBaseService {
 		Integer priceRange = 2000;
 
 		int records = 0;
-		for (int itemPage = 1; itemPage <= 10; itemPage++) {
-			for (int i = 0; i <= PRICE_RANGE_COUNT; i++) {
+		
+		for (int i = 0; i <= PRICE_RANGE_COUNT; i++) {
+			for (int itemPage = 1; itemPage <= 10; itemPage++) {
 				searchItemAndUpsert(searchIndex, browseNode, itemPage, minimumPrice + (priceRange * i));
 				records++;
 			}
@@ -124,6 +126,11 @@ public class AmazonCrawlerService extends AbstractBaseService {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
+		if (item.getOffers().getOffer().size() > 0 && item.getOffers().getOffer().get(0).getOfferListing().size() > 0) {
+			entity.is_preorder =item.getOffers().getOffer().get(0).getOfferListing().get(0).getAvailabilityAttributes().isIsPreorder() == null ? 0 : 1;
+		}
+		entity.image_url = item.getMediumImage() == null ? null : item.getMediumImage().getURL();
+		
 		return entity;
 	}
 	
