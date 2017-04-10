@@ -70,7 +70,7 @@
 			<a target="_brank" href="https://www.mercari.com/jp/search/?sort_order=&keyword=${item.title}&category_root=5&category_child=74&brand_name=&brand_id=&size_group=&price_min=&price_max=&status_on_sale=1">メルカリ</a>
 			|
 			<br />
-			<textarea name="bid_memo" rows="2" >${item.bid_memo!}</textarea>
+			<textarea class="form-control" name="bid_memo" rows="2" >${item.bid_memo!}</textarea>
 	</div>
 	<div class="col-lg-2 col-md-2 col-sm-2 col-xs-3">
 			<input type="text" name="sales_price" value="${item.sales_price!}" size="7" />円
