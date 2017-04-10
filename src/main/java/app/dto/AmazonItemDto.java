@@ -112,7 +112,7 @@ public class AmazonItemDto extends AmazonItem {
 		if (sales_price != null && sales_price < 0) {
 			return true;
 		}
-		if (sales_rank > 50000) {
+		if (sales_rank != null && sales_rank > 50000) {
 			return true;
 		}		
 		return false;

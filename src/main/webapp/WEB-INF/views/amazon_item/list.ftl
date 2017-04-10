@@ -38,7 +38,7 @@
 
   	<form action="upsert"> 
      <tr>
-		<td>  <a name="${item.asin}"><span id="${item.asin}"> </span></a>${item.asin} <br />${item.sales_rank}位</td>
+		<td>  <a name="${item.asin}"><span id="${item.asin}"> </span></a>${item.asin} <br />${item.sales_rank!}位</td>
 		<td>
 			<a target="_brank" href="https://www.amazon.co.jp/gp/offer-listing/${item.asin}/ref=dp_olp_used?ie=UTF8&condition=used">${item.title}</a></td>
 		<td align="right" nowrap>
