@@ -1,5 +1,6 @@
 package app.services;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -8,17 +9,18 @@ import java.util.List;
 
 import org.apache.commons.codec.net.URLCodec;
 import org.joda.time.DateTime;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import am.ik.aws.apa.jaxws.Item;
-import am.ik.aws.apa.jaxws.ItemLookupRequest;
-import am.ik.aws.apa.jaxws.ItemLookupResponse;
 import am.ik.aws.apa.jaxws.ItemSearchRequest;
 import am.ik.aws.apa.jaxws.ItemSearchResponse;
 import am.ik.aws.apa.jaxws.Items;
-import am.ik.aws.apa.jaxws.Offer;
-import am.ik.aws.apa.jaxws.OfferListing;
 import am.ik.aws.apa.jaxws.Price;
 import app.entity.AmazonItem;
+import app.entity.Offer;
 import app.system.AbstractBaseService;
 
 public class AmazonCrawlerService extends AbstractBaseService {
@@ -33,6 +35,7 @@ public class AmazonCrawlerService extends AbstractBaseService {
 	 *       16295861:中国のTVドラマ
 	 */
 	AmazonItemService amazonItemService = new AmazonItemService();
+	OfferService offerService = new OfferService();
 	final Integer PRICE_RANGE_COUNT = 20;
 
 	URLCodec codec = new URLCodec("UTF-8");
@@ -134,26 +137,40 @@ public class AmazonCrawlerService extends AbstractBaseService {
 		return entity;
 	}
 	
-	public List<AmazonItem> lookupItem() {
-		// AwsApaRequester requester = new AwsApaRequesterImpl();
-		ItemLookupRequest request = new ItemLookupRequest();
-		request.setCondition("Used");
-		request.setMerchantId("ALL");
-		request.getResponseGroup().add("OfferFull");
-		request.getResponseGroup().add("OfferSummary");
-		request.getItemId().add("B0057J4Z96");
-		ItemLookupResponse response = requester.itemLookup(request);
-
-		List<AmazonItem> amazonItems = new ArrayList<>();
-		for (Items items : response.getItems()) {
-			for (Item item : items.getItem()) {
-				for (Offer offer : item.getOffers().getOffer()){
-					System.out.print(offer.getMerchant().getName());
-					
-				}
-			}
-		}
-		return amazonItems;
+	public List<Offer> offerListing(String asin) throws IOException {
+		String url = "https://www.amazon.co.jp/gp/offer-listing/"+asin+"/ref=tmm_pap_used_olp_sr?ie=UTF8&condition=used";
+		 List<Offer> offers = new ArrayList<>();
+		 Document doc = Jsoup.connect(url).get();
+		 Elements rows = doc.select("div[role=row]");
+		 int count = -1;
+		 for (Element row : rows) {
+			 count++;
+			 if (count == 0) {
+				 continue;
+			 }
+			 Offer offer = new Offer();
+			 offer.asin = asin;
+			 offer.created = new DateTime();
+			 // price
+			 Elements priceElement = row.select("span.a-size-large, a-color-price olpOfferPrice a-text-bold");
+			 offer.price =  Integer.valueOf(priceElement.first().text().replaceAll("￥", "").replace(",", "").trim());
+			 // cond
+			 offer.cond = offerService.convertCondtionString(row.select("span.olpCondition").text());
+			 // shipping_costs
+			 Elements shippingCostsElement =row.select("span.olpShippingPrice");
+			 if (!shippingCostsElement.isEmpty()) {
+				 offer.shipping_costs = Integer.valueOf(shippingCostsElement.first().text().replaceAll("￥", "").replace(",", "").trim());
+			 }
+			 // is_fba
+			 offer.is_fba = row.select("i[aria-label=Amazon Prime (TM)]").isEmpty() ? 0 : 1;
+			 // no 
+			 offer.no = count;
+			 
+			 offers.add(offer);
+		 }
+		 
+		return offers;
 	}
+
 
 }

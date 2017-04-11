@@ -24,6 +24,7 @@ public class AmazonItem {
 	public Integer is_bid = 0;
 	public Integer is_success_bid = 0;
 	
+	public DateTime last_crawled;
 	public DateTime created;
 	public DateTime updated;
 
@@ -178,5 +179,14 @@ public class AmazonItem {
 	public void setIs_success_bid(Integer is_success_bid) {
 		this.is_success_bid = is_success_bid;
 	}
+
+	public DateTime getLast_crawled() {
+		return last_crawled;
+	}
+
+	public void setLast_crawled(DateTime last_crawled) {
+		this.last_crawled = last_crawled;
+	}
+	
 
 }

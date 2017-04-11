@@ -16,6 +16,7 @@ limitations under the License.
 
 package app.services;
 
+import org.joda.time.DateTime;
 import org.sql2o.Connection;
 
 import app.entity.Bid;
@@ -28,38 +29,32 @@ public class BidService extends AbstractBaseService {
 		if (bid == null) {
 			insert(asin, sales_price, shipping_costs, memo);
 		} else {
-			update(asin, sales_price, shipping_costs, memo);
+			update(asin, sales_price == null ? bid.sales_price : sales_price,
+					shipping_costs == null ? bid.shipping_costs : shipping_costs, memo == null ? bid.memo : memo);
 		}
 	}
-	
+
 	public Integer insert(String asin, Integer sales_price, Integer shipping_costs, String memo) {
 		String sql = "";
 		sql += "INSERT INTO bid(asin, sales_price, shipping_costs, memo) ";
 		sql += "VALUES (:asin, :sales_price, :shipping_costs, :memo)";
 
 		try (Connection con = sql2o.open()) {
-		    return con.createQuery(sql)
-		        .addParameter("asin", asin)
-		        .addParameter("sales_price", sales_price)
-		        .addParameter("shipping_costs", shipping_costs)
-		        .addParameter("memo", memo)
-		        .executeUpdate()
-		        .getKey(Integer.class);
+			return con.createQuery(sql).addParameter("asin", asin).addParameter("sales_price", sales_price)
+					.addParameter("shipping_costs", shipping_costs).addParameter("memo", memo).executeUpdate()
+					.getKey(Integer.class);
 		}
 	}
+
 	public void update(String asin, Integer sales_price, Integer shipping_costs, String memo) {
-		String sql = "update bid set sales_price = :sales_price, shipping_costs = :shipping_costs, memo = :memo where asin = :asin";
+		String sql = "update bid set sales_price = :sales_price, shipping_costs = :shipping_costs, memo = :memo, updated = :updated where asin = :asin";
 
 		try (Connection con = sql2o.open()) {
-		    con.createQuery(sql)
-			    .addParameter("asin", asin)
-			    .addParameter("sales_price", sales_price)
-			    .addParameter("shipping_costs", shipping_costs)
-			    .addParameter("memo", memo)
-			    .executeUpdate();
+			con.createQuery(sql).addParameter("sales_price", sales_price)
+					.addParameter("shipping_costs", shipping_costs).addParameter("memo", memo).addParameter("updated", new DateTime()).addParameter("asin", asin).executeUpdate();
 		}
 	}
-	
+
 	public Bid findOne(String asin) {
 		String sql = "select * from bid where asin = :asin ";
 		try (Connection con = sql2o.open()) {

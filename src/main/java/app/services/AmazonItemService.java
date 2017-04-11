@@ -78,7 +78,7 @@ public class AmazonItemService extends AbstractBaseService {
 	public void update(AmazonItem item) {
 		String sql = "";
 		sql += "update amazon_item ";
-		sql += "set title = :title, browse_node = :browse_node, sales_rank = :sales_rank, price = :price, lowest_new_price = :lowest_new_price, lowest_used_price = :lowest_used_price, yahoo_auction_url = :yahoo_auction_url, yahoo_auction_hit_count = :yahoo_auction_hit_count, total_used = :total_used, memo = :memo, updated = :updated, image_url = :image_url, is_preorder = :is_preorder, is_deleted = :is_deleted, is_bid = :is_bid, is_success_bid = :is_success_bid ";
+		sql += "set title = :title, browse_node = :browse_node, sales_rank = :sales_rank, price = :price, lowest_new_price = :lowest_new_price, lowest_used_price = :lowest_used_price, yahoo_auction_url = :yahoo_auction_url, yahoo_auction_hit_count = :yahoo_auction_hit_count, total_used = :total_used, memo = :memo, updated = :updated, image_url = :image_url, is_preorder = :is_preorder, is_deleted = :is_deleted, is_bid = :is_bid, is_success_bid = :is_success_bid, last_crawled = :last_crawled ";
 		sql += "where asin = :asin";
 
 		try (Connection con = sql2o.open()) {
@@ -98,18 +98,30 @@ public class AmazonItemService extends AbstractBaseService {
 					.addParameter("is_preorder", item.is_preorder)
 					.addParameter("is_deleted", item.is_deleted)
 					.addParameter("is_bid", item.is_bid)
-					.addParameter("is_success_bid", item.is_success_bid)					
+					.addParameter("is_success_bid", item.is_success_bid)
+					.addParameter("last_crawled", item.last_crawled)
 					.addParameter("asin", item.asin)
 					.executeUpdate();
 		}
 	}
 
 	public List<AmazonItemDto> findAll() {
+		String subSqlFromOrderBy = "order by (case when total_used = 0 then 1000000 - sales_rank else price / total_used end) desc ";
+		return findAll(subSqlFromOrderBy);
+	}
+	
+	public List<AmazonItemDto> findByLastCrawled(Integer limit) {
+		String subSqlFromOrderBy = "order by last_crawled limit " + limit ;
+		return findAll(subSqlFromOrderBy);
+	}
+	
+	public List<AmazonItemDto> findAll(String subSqlFromOrderBy) {
 		String sql = "";
 		sql += "select amazon_item.*,  sales_price, shipping_costs, bid.memo bid_memo ";
 		sql += "from amazon_item left outer join bid on amazon_item.asin = bid.asin ";
-		sql += "order by (case when total_used = 0 then 1000000 - sales_rank else price / total_used end) desc ";
-
+		
+		sql += subSqlFromOrderBy;
+		
 		try (Connection con = sql2o.open()) {
 			List<AmazonItemDto> list = con.createQuery(sql).executeAndFetch(AmazonItemDto.class);
 			for (AmazonItemDto dto : list) {
@@ -133,4 +145,6 @@ public class AmazonItemService extends AbstractBaseService {
 					.addParameter("yahoo_auction_hit_count", yahoo_auction_hit_count).executeUpdate();
 		}
 	}
+
+
 }
