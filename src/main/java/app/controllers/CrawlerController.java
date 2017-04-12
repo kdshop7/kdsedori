@@ -57,7 +57,7 @@ public class CrawlerController extends AbstractBaseAppController {
 	}
 
 	public void offerListing() {
-		Integer limit = 100;
+		Integer limit = 30;
 		List<AmazonItemDto> items = amazonItemService.findByLastCrawled(limit);
 
 		for (AmazonItemDto item : items) {

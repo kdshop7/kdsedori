@@ -37,6 +37,7 @@
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>9.2.1.v20140609</version>
 				<configuration>
+                                        <jvmArgs>-Xmx256m -Xms512m</jvmArgs>
 					<scanIntervalSeconds>10000</scanIntervalSeconds>
 					<systemProperties>
 						<systemProperty>
@@ -54,6 +55,7 @@
 					</systemProperties>
 				</configuration>
 			</plugin>
+                        <!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
@@ -62,6 +64,7 @@
 					<downloadJavadocs>true</downloadJavadocs>
 				</configuration>
 			</plugin>
+                        -->
 		</plugins>
 	</build>
 

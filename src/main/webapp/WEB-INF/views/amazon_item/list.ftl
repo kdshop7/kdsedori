@@ -16,6 +16,7 @@
 	<a href="?ignore_ng_filter=true">NGフィルタを無効にする</a>
   </#if> 
 |<a target="_brank" href="/crawler/update-yahoo-hits">Y!更新</a>
+|<a target="_brank" href="/crawler/offer-listing">Offer</a>
 |<a target="_brank" href="/crawler/run">データ取込</a>
 |</div>
 
