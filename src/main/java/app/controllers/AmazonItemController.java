@@ -1,5 +1,6 @@
 package app.controllers;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -10,8 +11,11 @@ import com.mysql.jdbc.StringUtils;
 import app.dto.AmazonItemDto;
 import app.dto.YahooAuctionItem;
 import app.entity.Bid;
+import app.entity.Offer;
+import app.services.AmazonCrawlerService;
 import app.services.AmazonItemService;
 import app.services.BidService;
+import app.services.OfferService;
 import app.services.YahooAuctionService;
 import app.system.AbstractBaseAppController;
 
@@ -20,6 +24,8 @@ public class AmazonItemController extends AbstractBaseAppController {
 	AmazonItemService amazonItemService = new AmazonItemService();
 	BidService bidService = new BidService();
 	YahooAuctionService yahooAuctionService = new YahooAuctionService();
+	OfferService offerService = new OfferService();
+	AmazonCrawlerService amazonCrawlerService = new AmazonCrawlerService();
 	
 	public void index() {
 		redirect(AmazonItemController.class, "list");
@@ -29,10 +35,15 @@ public class AmazonItemController extends AbstractBaseAppController {
 
 	}
 
-	public void upsert() throws UnsupportedEncodingException, ParseException {
+	public void upsert() throws ParseException, IOException {
 		String asin = $("asin");
 		if (asin != null || !"".equals(asin)) {
 			Integer sales_price = to_i($("sales_price").trim().replace(",", ""));
+			if (sales_price == null) {
+				List<Offer> offers = amazonCrawlerService.offerListing(asin);
+				offerService.batchDeleteAndInsert(asin, offers);
+				sales_price = offerService.calcSalesPrice(asin);
+			}
 			Integer shipping_costs = to_i($("shipping_costs").trim().replace(",", ""));
 
 			AmazonItemDto amazonItem = amazonItemService.findAmazonItemDto(asin);

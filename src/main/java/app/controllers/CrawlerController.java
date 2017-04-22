@@ -38,11 +38,7 @@ public class CrawlerController extends AbstractBaseAppController {
 
 		int records = 0;
 		for (AmazonItemDto item : items) {
-			Integer yahoo_auction_contract_price = Bid.calcYahooAuctionContractPrice(item.sales_price,
-					item.shipping_costs);
-			List<YahooAuctionItem> yahooItems = yahooAuctionService.requstYahooAuction(item.title, item.newPrice2(),
-					yahoo_auction_contract_price);
-			amazonItemService.updateYahooAuctionHitCount(item.asin, yahooItems.size());
+			updateYahooAuctionHits(item);
 			records++;
 		}
 
@@ -56,27 +52,34 @@ public class CrawlerController extends AbstractBaseAppController {
 		respond(msg).contentType("text/plain").status(200);
 	}
 
-	public void offerListing() {
+	private void updateYahooAuctionHits(AmazonItemDto item) throws UnsupportedEncodingException, ParseException {
+		Integer yahoo_auction_contract_price = Bid.calcYahooAuctionContractPrice(item.sales_price,
+				item.shipping_costs);
+		List<YahooAuctionItem> yahooItems = yahooAuctionService.requstYahooAuction(item.title, item.newPrice2(),
+				yahoo_auction_contract_price);
+		amazonItemService.updateYahooAuctionHitCount(item.asin, yahooItems.size());
+	}
+
+	public void offerListing() throws ParseException {
 		Integer limit = 30;
 		List<AmazonItemDto> items = amazonItemService.findByLastCrawled(limit);
 
 		for (AmazonItemDto item : items) {
 			try {
 				List<Offer> offers = amazonCrawlerService.offerListing(item.asin);
-				String asin = null;
-				if (offers.size() > 0) {
-					asin = offers.get(0).asin;
-					offerService.delete(asin);
-				}
+
+				offerService.delete(item.asin);
 				for (Offer offer : offers) {
 					offer.last_crawled = new DateTime();
 					offerService.insert(offer);
 				}
-				Integer sales_price = offerService.calcSalesPrice(asin);
-				bidService.upsert(asin, sales_price, null, null);
+				Integer sales_price = offerService.calcSalesPrice(item.asin);
+				bidService.upsert(item.asin, sales_price, null, null);
 				
 				item.last_crawled = new DateTime();
 				item.updated = new DateTime();
+				
+				updateYahooAuctionHits(item);
 				amazonItemService.update((AmazonItem)item);
 			} catch (IOException e) {
 				e.printStackTrace();

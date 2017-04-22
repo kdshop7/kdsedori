@@ -29,6 +29,14 @@ import app.system.AbstractBaseService;
 
 public class OfferService extends AbstractBaseService {
 
+	public void batchDeleteAndInsert(String asin, List<Offer> offers){
+		delete(asin);
+		for (Offer offer : offers) {
+			offer.last_crawled = new DateTime();
+			insert(offer);
+		}
+	}
+	
 	public Integer insert(Offer offer) {
 		String sql = "";
 		sql += "INSERT INTO offer (asin, cond, is_fba, no, price, shipping_costs, last_crawled, created) ";
