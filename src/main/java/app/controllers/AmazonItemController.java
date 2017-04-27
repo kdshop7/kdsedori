@@ -39,14 +39,14 @@ public class AmazonItemController extends AbstractBaseAppController {
 		String asin = $("asin");
 		if (asin != null || !"".equals(asin)) {
 			Integer sales_price = to_i($("sales_price").trim().replace(",", ""));
-			if (sales_price == null) {
+			AmazonItemDto amazonItem = amazonItemService.findAmazonItemDto(asin);
+			if (sales_price == null || sales_price - amazonItem.sales_price == 0) {
 				List<Offer> offers = amazonCrawlerService.offerListing(asin);
 				offerService.batchDeleteAndInsert(asin, offers);
 				sales_price = offerService.calcSalesPrice(asin);
-			}
+			} 
 			Integer shipping_costs = to_i($("shipping_costs").trim().replace(",", ""));
 
-			AmazonItemDto amazonItem = amazonItemService.findAmazonItemDto(asin);
 			Integer yahoo_auction_contract_price = Bid.calcYahooAuctionContractPrice(amazonItem.sales_price, amazonItem.shipping_costs);
 			List<YahooAuctionItem> yahooItems = yahooAuctionService.requstYahooAuction(amazonItem.title, amazonItem.newPrice2(), yahoo_auction_contract_price);
 			amazonItemService.updateYahooAuctionHitCount(amazonItem.asin, yahooItems.size());

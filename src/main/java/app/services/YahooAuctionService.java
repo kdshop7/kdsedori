@@ -1,5 +1,6 @@
 package app.services;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -11,6 +12,10 @@ import java.util.regex.Pattern;
 import org.javalite.http.Get;
 import org.javalite.http.Http;
 import org.json.simple.parser.ParseException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import app.dto.YahooAuctionItem;
 import app.system.AbstractBaseService;
@@ -27,7 +32,13 @@ public class YahooAuctionService extends AbstractBaseService{
 
 		// リクエストパラメータ
 		String AUC_ID = YAHOO_AUC_ID;
-		String aucQuery = URLEncoder.encode(keyword, "UTF-8");
+		
+		List<String> sentences = extractKeyphrase(keyword);
+		String text = "";
+		for (String sentence : sentences) {
+			text += sentence + " ";
+		}
+		String aucQuery = URLEncoder.encode(text.trim(), "UTF-8");
 
 		// リクエストURL
 		String url = BASE_URL + "?appid=" + AUC_ID + "&query=" + aucQuery + "&store=0";
@@ -82,6 +93,28 @@ public class YahooAuctionService extends AbstractBaseService{
 		return items;
 	}
 
+	public List<String> extractKeyphrase(String text) {
+		List<String> keyphrases = new ArrayList<>();
+
+		try {
+			// String sentence = URLEncoder.encode(text, "UTF-8");
+
+			String url = "https://jlp.yahooapis.jp/KeyphraseService/V1/extract?appid=" + YAHOO_AUC_ID + "&sentence="
+					+ text;
+			Document doc;
+
+			doc = Jsoup.connect(url).get();
+			Elements rows = doc.select("Result");
+			for (Element row : rows) {
+				keyphrases.add(row.select("Keyphrase").text());
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		return keyphrases;
+	}
+	
 	protected String getValue(Pattern pattern, String content) {
 		Matcher matcher = pattern.matcher(content);
 		return (matcher.find()) ? matcher.group(1) : null;
