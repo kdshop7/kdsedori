@@ -100,7 +100,7 @@ public class AmazonItemDto extends AmazonItem {
 			return true;
 		}
 
-		if (title.contains("レンタル落ち") || title.contains("VHS")) {
+		if (title.contains("レンタル落ち") || title.contains("VHS") || title.contains("コンパクトセレクション")) {
 			return true;
 		}
 		if (total_used > 20) {
