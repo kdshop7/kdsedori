@@ -45,9 +45,9 @@
 <div class="container">
 <div class="row">
 	<hr />
- 	<form  class="form-inline" action="upsert"> 
+ 	<form  action="upsert" class="form-horizontal"> 
 
-	<div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
+	<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
 		<span class="border-1">
  			<#if item.image_url??>
 				<img src="${item.image_url}" /><br />
@@ -55,7 +55,7 @@
 			<a name="${item.asin}"><span id="${item.asin}"> </span></a>${item.asin} <br />${item.sales_rank!}位
 		</span>
 	</div>
-	<div class="col-lg-5 col-md-5 col-sm-5 col-xs-8">
+	<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 form-inline">
 			<a target="_brank" href="https://www.amazon.co.jp/gp/offer-listing/${item.asin}/ref=dp_olp_used?ie=UTF8&condition=used">${item.title}</a>
 			<br />
 			<br />
@@ -72,24 +72,33 @@
 			<a target="_brank" href="https://www.mercari.com/jp/search/?sort_order=&keyword=${item.title}&category_root=5&category_child=74&brand_name=&brand_id=&size_group=&price_min=&price_max=&status_on_sale=1">メルカリ</a>
 			|
 			<br />
-			<textarea class="form-control" id="InputTextarea" name="bid_memo" rows="2" >${item.bid_memo!}</textarea>
-	</div>
-	<div class="col-lg-2 col-md-2 col-sm-2 col-xs-9">
-		<div class="pull-right">
-			<span class="text-nowrap"><input type="text" class="form-control" id="InputNumber" name="sales_price" value="${item.sales_price!}" size="7" />円</span>
-			<br />
+			<textarea class="form-control" id="InputTextarea" name="bid_memo" rows="2" cols="40">${item.bid_memo!}</textarea>
+	<br /> 
+                        <table bgcolor="#FFFFFF">
+                        <tr>
+                        <td>
+			  販売:
+                        </td>
+                        <td><input type="text" class="form-control" id="InputNumber" name="sales_price" value="${item.sales_price!}" size="7" /></td><td>円</td>
+                        </tr>
+                        </table>
+                        <table><tr>
+                        <td>
+			仕入：
 			${item.yahoo_auction_contract_price!}円
-			<br />
-			<input type="text" class="form-control" id="InputNumber" name="shipping_costs" class="shipping_costs" value="${item.shipping_costs!}" size="5" />円
-			<br />
-			${item.profit!}円(${item.roi!}%)
-		</div>
-	</div>
-	<div class="col-lg-2 col-md-2 col-sm-2 col-xs-3">
-			<input type="submit" class="btn btn-default center-block" value="更新">
-			<a href="delete?asin=${item.asin}">削除</a>	
-			<br />
-			<input type="hidden" name="asin" value="${item.asin}" />
+			+ 
+                        </td>
+                        <td>
+			<input type="text" class="form-control" id="InputNumber" name="shipping_costs" class="shipping_costs" value="${item.shipping_costs!}" size="5" />
+                        </td><td>円</td>
+                        </tr>
+                        </table>
+                        <table>
+                        <tr><td>
+			利益 : ${item.profit!}円(${item.roi!}%)
+                        </td></tr></table>
+                        <input type="submit" class="btn btn-default center-block" value="更新"><a href="delete?asin=${item.asin}">削除</a>
+                        <input type="hidden" name="asin" value="${item.asin}" />
 	</div>		
 	</form>
 </div><!--/.row -->
