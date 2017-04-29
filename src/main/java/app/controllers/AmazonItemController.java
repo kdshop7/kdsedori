@@ -40,7 +40,7 @@ public class AmazonItemController extends AbstractBaseAppController {
 		if (asin != null || !"".equals(asin)) {
 			Integer sales_price = to_i($("sales_price").trim().replace(",", ""));
 			AmazonItemDto amazonItem = amazonItemService.findAmazonItemDto(asin);
-			if (sales_price == null || sales_price - amazonItem.sales_price == 0) {
+			if (sales_price == null || amazonItem.sales_price == null || sales_price - amazonItem.sales_price == 0) {
 				List<Offer> offers = amazonCrawlerService.offerListing(asin);
 				offerService.batchDeleteAndInsert(asin, offers);
 				sales_price = offerService.calcSalesPrice(asin);
