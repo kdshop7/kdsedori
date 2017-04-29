@@ -38,7 +38,7 @@ public class YahooAuctionService extends AbstractBaseService{
 		for (String sentence : sentences) {
 			text += sentence + " ";
 		}
-		String aucQuery = URLEncoder.encode(text.trim(), "UTF-8");
+		String aucQuery = URLEncoder.encode(text.trim() + " " + keyword , "UTF-8");
 
 		// リクエストURL
 		String url = BASE_URL + "?appid=" + AUC_ID + "&query=" + aucQuery + "&store=0";
