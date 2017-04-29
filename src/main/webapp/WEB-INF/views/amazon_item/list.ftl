@@ -86,7 +86,8 @@
 		</div>
 	</div>
 	<div class="col-lg-2 col-md-2 col-sm-2 col-xs-3">
-			<input type="submit" class="btn btn-default center-block" value="更新">	
+			<input type="submit" class="btn btn-default center-block" value="更新">
+			<a href="delete?asin=${item.asin}">削除</a>	
 			<br />
 			<input type="hidden" name="asin" value="${item.asin}" />
 	</div>		

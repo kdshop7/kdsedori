@@ -146,5 +146,15 @@ public class AmazonItemService extends AbstractBaseService {
 		}
 	}
 
+	public void delete(String asin) {
+		String sql = "update amazon_item set is_deleted = 1, updated = now() where asin = :asin";
+
+		try (Connection con = sql2o.open()) {
+			con.createQuery(sql).addParameter("asin", asin)
+					.addParameter("asin", asin).executeUpdate();
+		}
+		
+	}
+
 
 }

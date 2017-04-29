@@ -35,6 +35,7 @@ public class AmazonItemController extends AbstractBaseAppController {
 
 	}
 
+
 	public void upsert() throws ParseException, IOException {
 		String asin = $("asin");
 		if (asin != null || !"".equals(asin)) {
@@ -56,6 +57,12 @@ public class AmazonItemController extends AbstractBaseAppController {
 		redirect(AmazonItemController.class, "list#" + $("asin"));
 	}
 
+	public void delete()  {
+		String asin = $("asin");
+		amazonItemService.delete(asin);
+		redirect(AmazonItemController.class, "list");
+	}
+	
 	public void list() {
 		Boolean ignore_ng_filter = StringUtils.isNullOrEmpty($("ignore_ng_filter")) ? false : Boolean.valueOf($("ignore_ng_filter"));
 		view("ignore_ng_filter", ignore_ng_filter);
