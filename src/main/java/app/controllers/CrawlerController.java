@@ -38,6 +38,9 @@ public class CrawlerController extends AbstractBaseAppController {
 
 		int records = 0;
 		for (AmazonItemDto item : items) {
+			if (item.isNg()) {
+				continue;
+			}
 			updateYahooAuctionHits(item);
 			records++;
 		}
