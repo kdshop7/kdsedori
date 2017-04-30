@@ -131,7 +131,7 @@ public class AmazonItemService extends AbstractBaseService {
 				dto.profit = Bid.calcProfit(dto.sales_price);
 				dto.roi = Bid.calcRoi(dto.sales_price, dto.shipping_costs);
 				dto.purchase_price = Bid.calcPurchasePrice(dto.sales_price, dto.shipping_costs);
-				dto.ng = dto.isNg();
+				dto.ng = dto.isNg() || dto.isNg2();
 			}
 			return list;
 		}

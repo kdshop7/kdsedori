@@ -93,23 +93,10 @@ public class AmazonItemDto extends AmazonItem {
 	
 
 	public boolean isNg() {
-		if (yahoo_auction_hit_count != null && yahoo_auction_hit_count == 0) {
-			return true;
-		}
-		if (newPrice2() < 5000) {
-			return true;
-		}
-
 		if (title.contains("レンタル落ち") || title.contains("VHS") || title.contains("コンパクトセレクション")) {
 			return true;
 		}
 		if (total_used > 20) {
-			return true;
-		}
-		if ((lowest_used_price != null && newPrice2() != null) && newPrice2() < lowest_used_price * 2) {
-			return true;
-		}
-		if (sales_price != null && sales_price < 0) {
 			return true;
 		}
 		if (sales_rank != null && sales_rank > 50000) {
@@ -124,6 +111,22 @@ public class AmazonItemDto extends AmazonItem {
 		return false;
 	}
 
+	public boolean isNg2() {
+		if (yahoo_auction_hit_count != null && yahoo_auction_hit_count == 0) {
+			return true;
+		}
+		if (newPrice2() < 5000) {
+			return true;
+		}
+		if ((lowest_used_price != null && newPrice2() != null) && newPrice2() < lowest_used_price * 2) {
+			return true;
+		}
+		if (sales_price != null && sales_price < 0) {
+			return true;
+		}		
+		return false;
+	}
+	
 	public Integer newPrice2() {
 		if (price == null && lowest_new_price == null) {
 			return -1;
