@@ -11,6 +11,7 @@
 <tbody>
 <#list items as item>
 <tr>
+	<td><img src="${item.yahooAuctionImageUrl!}" /></td>
 	<td><a href="http://aucview.aucfan.com/yahoo/${item.auctionId!}#colInfoArea" target="_blank">${item.auctionId!}</a></td>
 	<td><a href="${item.auctionItemUrl!}" target="_blank">${item.title!}</a></td>
 	<td align=right nowrap>${item.currentPrice!}円</td>

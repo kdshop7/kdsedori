@@ -6,6 +6,8 @@ public class YahooAuctionItem {
 	public String title;
 	public String auctionItemUrl;
 
+	public String yahooAuctionImageUrl;
+
 	public Integer currentPrice;
 	public Integer bidOrBuy;
 	public String sellerId;
@@ -87,5 +89,14 @@ public class YahooAuctionItem {
 	public void setBidOrBuy(Integer bidOrBuy) {
 		this.bidOrBuy = bidOrBuy;
 	}
+
+	public String getYahooAuctionImageUrl() {
+		return yahooAuctionImageUrl;
+	}
+
+	public void setYahooAuctionImageUrl(String yahooAuctionImageUrl) {
+		this.yahooAuctionImageUrl = yahooAuctionImageUrl;
+	}
+	
 
 }

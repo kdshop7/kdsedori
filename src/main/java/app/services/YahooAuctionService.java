@@ -33,12 +33,8 @@ public class YahooAuctionService extends AbstractBaseService{
 		// リクエストパラメータ
 		String AUC_ID = YAHOO_AUC_ID;
 		
-		List<String> sentences = extractKeyphrase(keyword);
-		String text = "";
-		for (String sentence : sentences) {
-			text += sentence + " ";
-		}
-		String aucQuery = URLEncoder.encode(text.trim() + " " + keyword , "UTF-8");
+		String text = keyPhrase(keyword);
+		String aucQuery = URLEncoder.encode(keyword + " " + text.trim() , "UTF-8");
 
 		// リクエストURL
 		String url = BASE_URL + "?appid=" + AUC_ID + "&query=" + aucQuery + "&store=0";
@@ -57,7 +53,7 @@ public class YahooAuctionService extends AbstractBaseService{
 		Pattern patternBidOrBuy = Pattern.compile("<BidOrBuy>(.+?)</BidOrBuy>", Pattern.DOTALL);
 		Pattern patternSeller = Pattern.compile("<Seller>(.+?)</Seller>", Pattern.DOTALL);
 		Pattern patternId = Pattern.compile("<Id>(.+?)</Id>", Pattern.DOTALL);
-
+		Pattern patternImage = Pattern.compile("<Image (.+?)>(.+?)</Image>", Pattern.DOTALL);
 		scanner.useDelimiter("<Item>"); // item要素の開始タグを区切りとする
 		int i = 0;
 		while (scanner.hasNext()) {
@@ -78,7 +74,11 @@ public class YahooAuctionService extends AbstractBaseService{
 			item.auctionId = getValue(patternAuctionId, content);
 			String sellerContent = getValue(patternSeller, content);
 			item.sellerId = getValue(patternId, sellerContent);
-
+			
+			Matcher ImageMatcher = patternImage.matcher(content);
+			String imageContent =  (ImageMatcher.find()) ? ImageMatcher.group(2) : null;
+			item.yahooAuctionImageUrl =imageContent;
+			
 			// 判定
 			// if ((!empty($item->CurrentPrice) && $new_price >=
 			// $item->CurrentPrice * 2)
@@ -91,6 +91,19 @@ public class YahooAuctionService extends AbstractBaseService{
 			i++;
 		}
 		return items;
+	}
+
+	private String keyPhrase(String keyword) {
+		String text = "";
+		try {
+			List<String> sentences = extractKeyphrase(keyword);
+			for (String sentence : sentences) {
+				text += sentence + " ";
+			}
+		} catch (RuntimeException e) {
+
+		}
+		return text;
 	}
 
 	public List<String> extractKeyphrase(String text) {

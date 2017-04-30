@@ -23,6 +23,8 @@ public class AmazonItem {
 	public Integer is_deleted = 0;
 	public Integer is_bid = 0;
 	public Integer is_success_bid = 0;
+
+	public String yahoo_auction_image_url;
 	
 	public DateTime last_crawled;
 	public DateTime created;
@@ -187,6 +189,12 @@ public class AmazonItem {
 	public void setLast_crawled(DateTime last_crawled) {
 		this.last_crawled = last_crawled;
 	}
-	
 
+	public String getYahoo_auction_image_url() {
+		return yahoo_auction_image_url;
+	}
+
+	public void setYahoo_auction_image_url(String yahoo_auction_image_url) {
+		this.yahoo_auction_image_url = yahoo_auction_image_url;
+	}
 }
