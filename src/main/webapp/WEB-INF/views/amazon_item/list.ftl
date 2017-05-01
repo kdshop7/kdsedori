@@ -39,7 +39,7 @@
 
   	  	
 <#list items as item>
-  <#if !ignore_ng_filter && item.ng>
+  <#if !ignore_ng_filter && (item.ng || item.ng2)>
   <#else>
 
 <div class="container">
